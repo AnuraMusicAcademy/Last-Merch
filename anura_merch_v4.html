@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anura Music Academy — Merch Tracker v4.0</title>
+  <style>
+    :root{
+      --ink:#18140f;
+      --muted:#6f6558;
+      --cream:#fff8ec;
+      --cream-2:#f6ead6;
+      --gold:#c99a42;
+      --gold-2:#e8c777;
+      --brown:#5d3f22;
+      --green:#2f7d55;
+      --red:#b7473d;
+      --line:rgba(93,63,34,.18);
+      --shadow:0 18px 60px rgba(63,42,18,.14);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(232,199,119,.45), transparent 32rem),
+        linear-gradient(135deg, #fffaf0 0%, #f6ead6 45%, #fff8ec 100%);
+      min-height:100vh;
+    }
+
+    .shell{max-width:1160px;margin:0 auto;padding:28px 18px 44px}
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:32px;
+      box-shadow:var(--shadow);
+      background:linear-gradient(135deg, rgba(24,20,15,.97), rgba(93,63,34,.93));
+      color:#fff;
+      padding:28px;
+    }
+    .hero:after{
+      content:"♪";
+      position:absolute;
+      right:34px;top:4px;
+      font-size:160px;
+      opacity:.08;
+      transform:rotate(-10deg);
+    }
+    .brand{display:flex;align-items:center;gap:16px;position:relative;z-index:1}
+    .logo{
+      width:58px;height:58px;border-radius:18px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--gold-2),var(--gold));
+      color:#2d1d0d;font-weight:900;font-size:24px;
+      box-shadow:0 12px 34px rgba(0,0,0,.22);
+    }
+    h1{margin:0;font-size:clamp(28px,5vw,56px);letter-spacing:-.04em;line-height:.98}
+    .subtitle{margin:8px 0 0;color:rgba(255,255,255,.76);font-size:16px}
+    .hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:18px;margin-top:26px;position:relative;z-index:1}
+    .stat-card{
+      background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:22px;
+      padding:18px;
+      backdrop-filter:blur(14px);
+    }
+    .stat-number{font-size:34px;font-weight:900;letter-spacing:-.04em}
+    .stat-label{color:rgba(255,255,255,.72);font-size:13px;margin-top:4px}
+    .mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+    .tab{
+      border:1px solid var(--line);background:rgba(255,255,255,.65);color:var(--brown);
+      padding:12px 16px;border-radius:999px;font-weight:800;cursor:pointer;
+      box-shadow:0 8px 24px rgba(93,63,34,.06);
+    }
+    .tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+    .panel{
+      display:none;
+      background:rgba(255,255,255,.78);
+      border:1px solid var(--line);
+      border-radius:32px;
+      padding:22px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+    }
+    .panel.active{display:block}
+    .section-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
+    h2{margin:0;font-size:28px;letter-spacing:-.03em}
+    .hint{color:var(--muted);margin:6px 0 0;line-height:1.5}
+
+    .grid{display:grid;gap:16px}
+    .two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .three{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+    label{font-weight:800;font-size:13px;color:var(--brown);display:block;margin-bottom:8px}
+    input,select,textarea{
+      width:100%;border:1px solid var(--line);border-radius:18px;padding:14px 15px;
+      font:inherit;background:#fff;color:var(--ink);outline:none;
+    }
+    textarea{min-height:90px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,154,66,.16)}
+
+    .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    button,.button{
+      border:0;border-radius:18px;padding:13px 18px;font-weight:900;cursor:pointer;
+      background:var(--ink);color:#fff;font:inherit;box-shadow:0 12px 28px rgba(24,20,15,.16);
+      text-decoration:none;display:inline-flex;align-items:center;gap:8px;justify-content:center;
+    }
+    button.secondary{background:#fff;color:var(--brown);border:1px solid var(--line);box-shadow:none}
+    button.gold{background:linear-gradient(135deg,var(--gold-2),var(--gold));color:#241608}
+    button.danger{background:#fff;color:var(--red);border:1px solid rgba(183,71,61,.3);box-shadow:none}
+    button:disabled{opacity:.55;cursor:not-allowed}
+
+    .teacher-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+    .teacher-card,.student-card,.item-card,.dash-card{
+      border:1px solid var(--line);border-radius:22px;background:#fff;padding:16px;
+      box-shadow:0 8px 28px rgba(93,63,34,.07);
+    }
+    .teacher-card{cursor:pointer;transition:.18s transform,.18s box-shadow,.18s border-color}
+    .teacher-card:hover{transform:translateY(-2px);border-color:rgba(201,154,66,.55);box-shadow:0 16px 36px rgba(93,63,34,.12)}
+    .teacher-card.selected{border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,154,66,.18)}
+    .teacher-name{font-weight:950;font-size:18px}
+    .teacher-meta{color:var(--muted);font-size:13px;margin-top:5px}
+
+    .student-list{max-height:420px;overflow:auto;padding-right:4px;display:grid;gap:10px}
+    .student-card{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
+    .student-card.selected{border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,154,66,.16)}
+    .student-name{font-weight:900}
+    .pill{font-size:12px;font-weight:900;padding:7px 10px;border-radius:999px;background:var(--cream-2);color:var(--brown);white-space:nowrap}
+    .pill.green{background:rgba(47,125,85,.12);color:var(--green)}
+    .pill.red{background:rgba(183,71,61,.1);color:var(--red)}
+    .pill.dark{background:var(--ink);color:#fff}
+
+    .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+    .item-card{position:relative;cursor:pointer;min-height:132px}
+    .item-card input{position:absolute;opacity:0;pointer-events:none}
+    .item-card .check{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-weight:900;float:right}
+    .item-card.active{border-color:var(--gold);background:linear-gradient(180deg,#fff,#fff8ec);box-shadow:0 0 0 4px rgba(201,154,66,.15)}
+    .item-card.active .check{background:var(--gold);border-color:var(--gold);color:#fff}
+    .item-title{font-weight:950;font-size:18px;margin-top:8px}
+    .item-desc{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.45}
+
+    .progress{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+    .step{height:8px;border-radius:999px;background:rgba(93,63,34,.16)}
+    .step.on{background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+
+    .review-box{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;line-height:1.7}
+    .review-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px dashed var(--line);padding:9px 0}
+    .review-row:last-child{border-bottom:0}
+    .review-row strong{color:var(--brown)}
+
+    table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;padding:0 12px}
+    td{background:#fff;padding:14px 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    td:first-child{border-left:1px solid var(--line);border-radius:16px 0 0 16px;font-weight:900}
+    td:last-child{border-right:1px solid var(--line);border-radius:0 16px 16px 0}
+
+    .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;padding:14px 18px;border-radius:999px;box-shadow:var(--shadow);transition:.22s;z-index:20;font-weight:800}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    .footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
+
+    @media(max-width:760px){
+      .shell{padding:14px 10px 28px}.hero{padding:20px;border-radius:26px}.hero-grid,.two,.three{grid-template-columns:1fr}.mini-stats{grid-template-columns:1fr 1fr}.section-head{display:block}.panel{padding:16px;border-radius:26px}.student-card{align-items:flex-start;flex-direction:column}.review-row{display:block}.review-row span{display:block;margin-top:3px}.tabs{position:sticky;top:0;z-index:9;background:rgba(255,248,236,.9);padding:10px 0;backdrop-filter:blur(12px)}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div class="brand">
+        <div class="logo">AM</div>
+        <div>
+          <h1>Anura Merch Tracker</h1>
+          <p class="subtitle">Premium teacher distribution system · v4.0</p>
+        </div>
+      </div>
+      <div class="hero-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="heroCompletion">0%</div>
+          <div class="stat-label">Overall distribution completion</div>
+        </div>
+        <div class="mini-stats">
+          <div class="stat-card"><div class="stat-number" id="heroTotal">0</div><div class="stat-label">Students</div></div>
+          <div class="stat-card"><div class="stat-number" id="heroDone">0</div><div class="stat-label">Recorded</div></div>
+          <div class="stat-card"><div class="stat-number" id="heroLeft">0</div><div class="stat-label">Remaining</div></div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="record">Record Merch</button>
+      <button class="tab" data-tab="dashboard">Dashboard</button>
+      <button class="tab" data-tab="inventory">Inventory</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+
+    <main>
+      <section id="record" class="panel active">
+        <div class="section-head">
+          <div><h2>Record a Distribution</h2><p class="hint">Teacher → Student → Items → Review. Works on iPad, phone, and desktop.</p></div>
+          <span class="pill dark" id="stepLabel">Step 1 of 4</span>
+        </div>
+        <div class="progress"><div class="step on"></div><div class="step"></div><div class="step"></div><div class="step"></div></div>
+
+        <div id="step1" class="wizard-step">
+          <label>Select Teacher</label>
+          <div class="teacher-cards" id="teacherCards"></div>
+          <div class="btn-row"><button class="gold" id="toStep2" disabled>Start Recording →</button></div>
+        </div>
+
+        <div id="step2" class="wizard-step" hidden>
+          <div class="grid two">
+            <div><label>Search Student</label><input id="studentSearch" placeholder="Type student name..." /></div>
+            <div><label>Status Filter</label><select id="studentStatusFilter"><option value="all">All students</option><option value="pending">Pending only</option><option value="done">Recorded only</option></select></div>
+          </div>
+          <div class="student-list" id="studentList" style="margin-top:14px"></div>
+          <div class="btn-row"><button class="secondary" data-back="1">← Back</button><button class="gold" id="toStep3" disabled>Continue →</button></div>
+        </div>
+
+        <div id="step3" class="wizard-step" hidden>
+          <label>Merch Items</label>
+          <div class="items" id="itemCards"></div>
+          <div style="margin-top:14px"><label>Notes</label><textarea id="notes" placeholder="Optional note, size, parent pickup, special situation..."></textarea></div>
+          <div class="btn-row"><button class="secondary" data-back="2">← Back</button><button class="gold" id="toStep4">Review →</button></div>
+        </div>
+
+        <div id="step4" class="wizard-step" hidden>
+          <div class="review-box" id="reviewBox"></div>
+          <div class="btn-row"><button class="secondary" data-back="3">← Back</button><button class="gold" id="submitRecord">Submit Record →</button></div>
+        </div>
+      </section>
+
+      <section id="dashboard" class="panel">
+        <div class="section-head">
+          <div><h2>Distribution Dashboard</h2><p class="hint">Track each teacher, student, and recorded merch history.</p></div>
+          <div class="btn-row" style="margin-top:0"><button class="secondary" id="exportCsv">Export CSV</button><button class="danger" id="clearData">Clear Demo Data</button></div>
+        </div>
+        <div class="grid three" id="dashboardCards"></div>
+        <div style="overflow:auto;margin-top:16px"><table><thead><tr><th>Student</th><th>Teacher</th><th>Items</th><th>Date</th><th>Status</th></tr></thead><tbody id="recordsTable"></tbody></table></div>
+      </section>
+
+      <section id="inventory" class="panel">
+        <div class="section-head"><div><h2>Inventory Overview</h2><p class="hint">Update starting inventory in the code config. Counts decrease as records are submitted.</p></div></div>
+        <div class="grid three" id="inventoryCards"></div>
+      </section>
+
+      <section id="settings" class="panel">
+        <div class="section-head"><div><h2>Setup Notes</h2><p class="hint">This file is ready for GitHub Pages. To connect Google Sheets, paste your Apps Script Web App URL in the CONFIG section.</p></div></div>
+        <div class="review-box">
+          <p><strong>Where to edit:</strong> Open this HTML file and update <code>CONFIG.teachers</code>, <code>CONFIG.students</code>, <code>CONFIG.items</code>, and <code>CONFIG.googleScriptUrl</code>.</p>
+          <p><strong>Offline safety:</strong> If Google Sheet is not connected, records save in this browser using localStorage. You can export CSV anytime.</p>
+          <p><strong>Recommended:</strong> Keep one teacher/admin iPad logged in for merchandise distribution days.</p>
+        </div>
+      </section>
+    </main>
+
+    <p class="footer-note">Anura Music Academy · Designed for clean event-day merchandise tracking</p>
+  </div>
+  <div class="toast" id="toast">Saved</div>
+
+  <script>
+    const CONFIG = {
+      googleScriptUrl: "", // Paste Google Apps Script Web App URL here. Leave blank for local-only mode.
+      academyName: "Anura Music Academy",
+      teachers: ["Bella", "Ochirbat", "Marla", "Suzy", "Mona", "Khatanbold"],
+      students: [
+        { name:"Jiguur", teacher:"Ochirbat" },
+        { name:"Jacob", teacher:"Bella" },
+        { name:"Jayson", teacher:"Bella" },
+        { name:"Bilguun", teacher:"Ochirbat" },
+        { name:"Todbayar", teacher:"Ochirbat" },
+        { name:"Sodbayar", teacher:"Ochirbat" },
+        { name:"Michael", teacher:"Marla" },
+        { name:"Anar Ganbat", teacher:"Ochirbat" },
+        { name:"Misheel", teacher:"Bella" },
+        { name:"William", teacher:"Marla" },
+        { name:"AJ", teacher:"Ochirbat" },
+        { name:"Irmuun", teacher:"Ochirbat" },
+        { name:"Enguun", teacher:"Ochirbat" },
+        { name:"Burenkhuslen", teacher:"Ochirbat" }
+      ],
+      items: [
+        { id:"package", name:"Merch Package", desc:"Default included package", stock:200, default:true },
+        { id:"shirt", name:"T-Shirt", desc:"Anura branded shirt", stock:120 },
+        { id:"tote", name:"Tote Bag", desc:"Reusable academy tote", stock:100 },
+        { id:"sticker", name:"Sticker Set", desc:"Student gift item", stock:180 },
+        { id:"program", name:"Program Book", desc:"Event or recital program", stock:150 },
+        { id:"instrument", name:"Instrument Item", desc:"Piano / Morin Khuur related item", stock:40 }
+      ]
+    };
+
+    const STORAGE_KEY = "anura_merch_v4_records";
+    let state = { tab:"record", step:1, teacher:null, student:null, items:new Set(CONFIG.items.filter(i=>i.default).map(i=>i.id)), notes:"" };
+    let records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+    const $ = (id)=>document.getElementById(id);
+    const fmtDate = (d)=> new Date(d).toLocaleString([], {month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit"});
+    const isRecorded = (student, teacher)=> records.some(r=>r.student===student && r.teacher===teacher);
+
+    function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1800); }
+    function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); }
+
+    function renderAll(){ renderHero(); renderTabs(); renderWizard(); renderDashboard(); renderInventory(); }
+
+    function renderHero(){
+      const total = CONFIG.students.length;
+      const done = new Set(records.map(r=>`${r.teacher}|${r.student}`)).size;
+      const left = Math.max(total-done,0);
+      const pct = total ? Math.round((done/total)*100) : 0;
+      $("heroCompletion").textContent = pct + "%"; $("heroTotal").textContent=total; $("heroDone").textContent=done; $("heroLeft").textContent=left;
+    }
+
+    function renderTabs(){
+      document.querySelectorAll(".tab").forEach(btn=>btn.classList.toggle("active", btn.dataset.tab===state.tab));
+      document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active", p.id===state.tab));
+    }
+
+    function goStep(n){ state.step=n; renderWizard(); window.scrollTo({top:0,behavior:"smooth"}); }
+
+    function renderWizard(){
+      [1,2,3,4].forEach(n=>$("step"+n).hidden = state.step!==n);
+      $("stepLabel").textContent = `Step ${state.step} of 4`;
+      document.querySelectorAll(".step").forEach((el,i)=>el.classList.toggle("on", i<state.step));
+      renderTeachers(); renderStudents(); renderItems(); renderReview();
+      $("toStep2").disabled=!state.teacher; $("toStep3").disabled=!state.student;
+    }
+
+    function renderTeachers(){
+      $("teacherCards").innerHTML = CONFIG.teachers.map(t=>{
+        const total = CONFIG.students.filter(s=>s.teacher===t).length;
+        const done = CONFIG.students.filter(s=>s.teacher===t && isRecorded(s.name,t)).length;
+        return `<div class="teacher-card ${state.teacher===t?'selected':''}" data-teacher="${t}"><div class="teacher-name">${t}</div><div class="teacher-meta">${done}/${total} students recorded</div></div>`;
+      }).join("");
+      document.querySelectorAll(".teacher-card").forEach(card=>card.onclick=()=>{state.teacher=card.dataset.teacher;state.student=null;renderWizard();});
+    }
+
+    function renderStudents(){
+      const q = ($("studentSearch")?.value || "").toLowerCase();
+      const filter = $("studentStatusFilter")?.value || "all";
+      const list = CONFIG.students.filter(s=>s.teacher===state.teacher).filter(s=>s.name.toLowerCase().includes(q)).filter(s=>{
+        const done=isRecorded(s.name,s.teacher); return filter==="all" || (filter==="done" && done) || (filter==="pending" && !done);
+      });
+      $("studentList").innerHTML = state.teacher ? list.map(s=>{
+        const done=isRecorded(s.name,s.teacher);
+        return `<div class="student-card ${state.student===s.name?'selected':''}" data-student="${s.name}"><div><div class="student-name">${s.name}</div><div class="teacher-meta">Teacher: ${s.teacher}</div></div><span class="pill ${done?'green':'red'}">${done?'Recorded':'Pending'}</span></div>`;
+      }).join("") || `<div class="review-box">No students found.</div>` : `<div class="review-box">Please select a teacher first.</div>`;
+      document.querySelectorAll(".student-card").forEach(card=>card.onclick=()=>{state.student=card.dataset.student;renderWizard();});
+    }
+
+    function renderItems(){
+      $("itemCards").innerHTML = CONFIG.items.map(item=>`<label class="item-card ${state.items.has(item.id)?'active':''}"><input type="checkbox" data-item="${item.id}" ${state.items.has(item.id)?'checked':''}/><span class="check">${state.items.has(item.id)?'✓':''}</span><div class="item-title">${item.name}</div><div class="item-desc">${item.desc}</div><span class="pill">Stock: ${remainingStock(item.id)}</span></label>`).join("");
+      document.querySelectorAll("[data-item]").forEach(cb=>cb.onchange=()=>{ cb.checked ? state.items.add(cb.dataset.item) : state.items.delete(cb.dataset.item); renderItems(); });
+    }
+
+    function renderReview(){
+      const itemNames = CONFIG.items.filter(i=>state.items.has(i.id)).map(i=>i.name).join(", ") || "No items selected";
+      $("reviewBox").innerHTML = `<div class="review-row"><strong>Teacher</strong><span>${state.teacher||"—"}</span></div><div class="review-row"><strong>Student</strong><span>${state.student||"—"}</span></div><div class="review-row"><strong>Items</strong><span>${itemNames}</span></div><div class="review-row"><strong>Notes</strong><span>${($("notes")?.value || "None")}</span></div>`;
+    }
+
+    function remainingStock(itemId){
+      const start = CONFIG.items.find(i=>i.id===itemId)?.stock || 0;
+      const used = records.filter(r=>r.items.includes(itemId)).length;
+      return Math.max(start-used,0);
+    }
+
+    async function submitRecord(){
+      state.notes = $("notes").value.trim();
+      const payload = { id:crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), date:new Date().toISOString(), teacher:state.teacher, student:state.student, items:[...state.items], notes:state.notes };
+      records.unshift(payload); save();
+      if(CONFIG.googleScriptUrl){
+        try{ await fetch(CONFIG.googleScriptUrl,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); }
+        catch(e){ console.warn("Google Sheet submit failed, saved locally.", e); }
+      }
+      toast("Recorded successfully");
+      state = { ...state, step:1, teacher:null, student:null, items:new Set(CONFIG.items.filter(i=>i.default).map(i=>i.id)), notes:"" };
+      $("notes").value=""; renderAll();
+    }
+
+    function renderDashboard(){
+      const total=CONFIG.students.length, done=new Set(records.map(r=>`${r.teacher}|${r.student}`)).size, left=Math.max(total-done,0);
+      $("dashboardCards").innerHTML = [
+        ["Total Students", total, "dark"], ["Recorded", done, "green"], ["Remaining", left, "red"]
+      ].map(([label,num,cls])=>`<div class="dash-card"><span class="pill ${cls}">${label}</span><div class="stat-number" style="color:var(--ink);margin-top:10px">${num}</div></div>`).join("");
+      $("recordsTable").innerHTML = records.map(r=>`<tr><td>${r.student}</td><td>${r.teacher}</td><td>${r.items.map(id=>CONFIG.items.find(i=>i.id===id)?.name||id).join(", ")}</td><td>${fmtDate(r.date)}</td><td><span class="pill green">Recorded</span></td></tr>`).join("") || `<tr><td colspan="5">No records yet.</td></tr>`;
+    }
+
+    function renderInventory(){
+      $("inventoryCards").innerHTML = CONFIG.items.map(i=>{const used=i.stock-remainingStock(i.id);return `<div class="dash-card"><span class="pill">${i.name}</span><div class="stat-number" style="color:var(--ink);margin-top:10px">${remainingStock(i.id)}</div><div class="teacher-meta">${used} used · ${i.stock} starting stock</div></div>`}).join("");
+    }
+
+    function exportCsv(){
+      const rows = [["Date","Teacher","Student","Items","Notes"], ...records.map(r=>[fmtDate(r.date),r.teacher,r.student,r.items.join(" | "),r.notes||""])];
+      const csv = rows.map(row=>row.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv],{type:"text/csv"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="anura-merch-records.csv"; a.click(); URL.revokeObjectURL(url);
+    }
+
+    document.querySelectorAll(".tab").forEach(btn=>btn.onclick=()=>{state.tab=btn.dataset.tab;renderAll();});
+    $("toStep2").onclick=()=>goStep(2); $("toStep3").onclick=()=>goStep(3); $("toStep4").onclick=()=>{state.notes=$("notes").value.trim();goStep(4)};
+    $("submitRecord").onclick=submitRecord;
+    document.querySelectorAll("[data-back]").forEach(b=>b.onclick=()=>goStep(Number(b.dataset.back)));
+    $("studentSearch").oninput=renderStudents; $("studentStatusFilter").onchange=renderStudents;
+    $("exportCsv").onclick=exportCsv;
+    $("clearData").onclick=()=>{ if(confirm("Clear all locally saved merch records?")){ records=[]; save(); renderAll(); toast("Local data cleared"); } };
+
+    renderAll();
+  </script>
+</body>
+</html>
